@@ -1,0 +1,9 @@
+﻿@model BusinessSectorListModel
+
+<h5 class="allcaps bold mrg-bottom-20 title">@T("Plugins.Widgets.BusinessSector.BusinessSectors")</h5>
+<ul class="list">
+    @foreach (var sector in Model.Data)
+    {
+        <li><a href="@Url.RouteUrl("BusinessSector", new { SeName = sector.SeName })">@sector.Name</a></li>
+    }
+</ul>

@@ -1,0 +1,375 @@
+﻿@model MegaMenuModel
+@using Nop.Core
+@using Nop.Web.Framework.Themes
+@inject IWorkContext workContext
+@inject IThemeContext themeContext
+@{
+    var supportRtl = (await workContext.GetWorkingLanguageAsync()).Rtl;
+    var themeName = await themeContext.GetWorkingThemeNameAsync();
+
+    if (supportRtl)
+    {
+        NopHtml.AddCssFileParts("/Plugins/NopStation.Plugin.Widgets.MegaMenu/Themes/TelecomEasy/Content/css/megamenu.rtl.css", string.Empty);
+    }
+    else
+    {
+        NopHtml.AddCssFileParts("/Plugins/NopStation.Plugin.Widgets.MegaMenu/Themes/TelecomEasy/Content/css/megamenu.css", string.Empty);
+    }
+}
+<div class="header-other-link-items">
+    <ul id="other-link-list">
+        <li><a href="@Url.RouteUrl("HomePage")">@T("Home")</a></li>
+        @foreach (var topic in Model.Topics)
+        {
+            <li><a href="@Url.RouteUrl("Topic", new { SeName = topic.SeName })">@topic.Name</a></li>
+        }
+
+        @if (Model.NewProductsEnabled && Model.DisplayNewProductsMenuItem)
+        {
+            <li><a href="@Url.RouteUrl("NewProducts")">@T("Products.NewProducts")</a></li>
+        }
+
+        @if (Model.DisplayProductSearchMenuItem)
+        {
+            <li><a href="@Url.RouteUrl("ProductSearch")">@T("Search")</a></li>
+        }
+        @if (Model.DisplayCustomerInfoMenuItem)
+        {
+            <li><a href="@Url.RouteUrl("CustomerInfo")">@T("Account.MyAccount")</a></li>
+        }
+        @if (Model.BlogEnabled && Model.DisplayBlogMenuItem)
+        {
+            <li><a href="@Url.RouteUrl("Blog")">@T("Blog")</a></li>
+        }
+        @if (Model.ForumEnabled && Model.DisplayForumsMenuItem)
+        {
+            <li><a href="@Url.RouteUrl("Boards")">@T("Forum.Forums")</a></li>
+        }
+        @if (Model.DisplayContactUsMenuItem)
+        {
+            <li><a href="@Url.RouteUrl("ContactUs")">@T("ContactUs")</a></li>
+        }
+
+        @if (Model.Manufacturers.Any())
+        {
+            <li class="d-inline-block manufacturer-nav-item">
+                <ul class="dropdown-menu">
+                    <li>
+                        <a class="mm-nav-link manufacturer-link" href="#">@T("NopStation.MegaMenu.Public.Manufacturers")</a>
+                        <ul class="submenu">
+                            @foreach (var manufacturer in Model.Manufacturers)
+                            {
+                                <li class="mm-nav-item">
+                                    <a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })">
+                                        @if (manufacturer.PictureModel != null && !string.IsNullOrEmpty(manufacturer.PictureModel.ImageUrl))
+                                        {
+                                            <img class="img-fluid" src="@manufacturer.PictureModel.ImageUrl" alt="@manufacturer.PictureModel.ThumbImageUrl" />
+                                        }
+                                        <span>@manufacturer.Name</span>
+                                    </a>
+                                </li>
+                            }
+                            <li class="mm-nav-item">
+                                <a href="@Url.RouteUrl("ManufacturerList")">@T("NopStation.MegaMenu.Public.AllManufacturers")</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        }
+    </ul>
+</div>
+<div class="mm-navbar">
+
+    <div class="dark-blue h50 white-text relative">
+        <div class="wraper mrg-auto relative">
+            <div class="left cats-button pointer normal relative">
+                <div class="menu-call">
+                    <span></span>
+                </div>
+                <span class="prod_header">Products</span>
+
+            </div>
+            <div class="cats white shadow">
+
+                <ul class="tabs" humge-type="tabs">
+                    <li class="current" tab="tab_name1">@T("Menu.CategoryTitle")</li>
+                    <li tab="tab_name2">@T("Menu.ManufacturerTitle")</li>
+                    <li tab="tab_name3">@T("Plugins.Widgets.BusinessSector.BusinessSectors")</li>
+                </ul>
+                <div humge-tab="tab_name1">
+                    @if (Model.Categories.Any())
+                    {
+                        <ul>
+                            @foreach (var category in Model.Categories)
+                            {
+                                var categoryLineModel = new MegaMenuModel.CategoryLineModel
+                    {
+                        Category = category,
+                    };
+
+                                @await Html.PartialAsync("_CategoryLine.MegaMenu.cshtml", categoryLineModel)
+                            }
+                        </ul>
+                    }
+                </div>
+                <div humge-tab="tab_name2" class="pad-20">
+
+                    @if (Model.Manufacturers.Any())
+                    {
+                        <ul>
+                            @foreach (var manufacturer in Model.Manufacturers)
+                            {
+                                <li class="mm-nav-item">
+                                    <a class="mm-nav-link" href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })">
+                                        <span>@manufacturer.Name</span>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+
+                    }
+                </div>
+                <div humge-tab="tab_name3" class="pad-20">
+                    @if (Model.BusinessSectors.Any())
+                    {
+                        <ul>
+                        @foreach (var sector in Model.BusinessSectors)
+                        {
+                            <li class="mm-nav-item">
+                                <a href="@Url.RouteUrl("BusinessSector", new { SeName = sector.SeName })" class="mm-nav-link">
+                                    <span>@sector.Name</span>
+                                </a>
+                            </li>
+                        }
+                        </ul>
+                    }
+                </div>
+            </div>
+            <div class="right allcaps relative">
+                <span class="material-icons">
+                   close
+                </span>
+                <nav>
+                    <ul>
+                        <li>
+                            <div class="pointer about-us-parent normal relative">
+                                <span class="prod_header menu-title">@T("Menu.OurcompanyTitle")</span>
+                            </div>
+                            <div class="about-us white shadow">
+                                <ul class="tabs" humge-type="tabs">
+                                    <li class="current" tab="our_company1">@T("Menu.AboutusTitle")</li>
+                                    <li tab="our_company2">@T("Menu.OtherInformationTitle")</li>
+                                </ul>
+                                <div humge-tab="our_company1">
+                                    <ul>
+                                        <li><a href="@T("Menu.AboutusLink")">@T("Menu.Aboutus")</a></li>
+                                        <li><a href="@T("Menu.OurteamLink")">@T("Menu.Ourteam")</a></li>
+                                        <li><a href="@T("Menu.OurservicesLink")">@T("Menu.Ourservices")</a></li>
+                                        <li><a href="@T("Menu.OurcustomersLink")">@T("Menu.Ourcustomers")</a></li>
+                                    </ul>
+                                </div>
+                                <div humge-tab="our_company2">
+                                    <ul>
+                                        <li><a href="@T("Menu.ProductivitysolutionsLink")">@T("Menu.Productivitysolutions")</a></li>
+                                        <li><a href="@T("Menu.LegalnoticeLink")">@T("Menu.Legalnotice")</a></li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </li>
+                        @foreach (var topic in Model.Topics)
+                        {
+                            <li><a class="menu-title" href="@Url.RouteUrl("Topic", new { SeName = topic.SeName })">@topic.Name</a></li>
+                        }
+                        @if (Model.BlogEnabled && Model.DisplayBlogMenuItem)
+                        {
+                            <li><a class="menu-title" href="@Url.RouteUrl("Blog")">@T("Blog")</a></li>
+                        }
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="top-menu mm-navbar mobile mobile-menu">
+    @await Component.InvokeAsync("Widget", new { widgetZone = PublicWidgetZones.MobHeaderMenuBefore })
+    <div class="mm-selector-wrapper">
+    </div>
+    <div class="mm-header-links">
+    </div>
+
+    <div class=" d-flex justify-content-end align-items-center close-mobile-menu">
+        <i class="icon-close" id="colseMenu"></i>
+    </div>
+
+
+    <ul class="mobile-nav-items">
+        @if (Model.DisplayHomePageMenuItem)
+        {
+            <li class="mm-nav-item"><a class="mm-nav-link" href="@Url.RouteUrl("HomePage")">@T("HomePage")</a></li>
+        }
+        @foreach (var category in Model.Categories)
+        {
+            var categoryLineModel = new MegaMenuModel.CategoryLineModel
+                {
+                    Category = category
+                };
+            @await Html.PartialAsync("_CategoryLine.MegaMenu.cshtml", categoryLineModel)
+        }
+        @if (Model.Manufacturers.Any())
+        {
+            <li class="manufacturer-nav-item mm-nav-item has-submenu">
+                <a class="mm-nav-link manufacturer-link" href="#">@T("NopStation.MegaMenu.Public.Manufacturers")</a>
+                <div class="sublist-toggle"></div>
+                <ul class="mm-dropdown-list sublist first-level">
+                    <li class="sublist-close-button">
+                        <button class="d-inline-flex mm-back-button">
+                            <i class="icon-arrow-left"></i>  @T("Common.Back")
+                        </button>
+                    </li>
+                    @foreach (var manufacturer in Model.Manufacturers)
+                    {
+                        <li class="mm-nav-item">
+                            <a class="mm-nav-link" href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })">
+                                @if (manufacturer.PictureModel != null && !string.IsNullOrEmpty(manufacturer.PictureModel.ImageUrl))
+                                {
+                                    <img class="img-fluid" src="@manufacturer.PictureModel.ImageUrl" alt="@manufacturer.PictureModel.ThumbImageUrl" />
+                                }
+                                <span>@manufacturer.Name</span>
+                            </a>
+                        </li>
+                    }
+                    <li class="mm-nav-item all-manufacture">
+                        <a class="mm-nav-link" href="@Url.RouteUrl("ManufacturerList")">@T("NopStation.MegaMenu.Public.AllManufacturers")</a>
+                    </li>
+                </ul>
+            </li>
+        }
+        @foreach (var topic in Model.Topics)
+        {
+            <li class="mm-nav-item"><a class="mm-nav-link" href="@Url.RouteUrl("Topic", new { SeName = topic.SeName })">@topic.Name</a></li>
+        }
+        @if (Model.NewProductsEnabled && Model.DisplayNewProductsMenuItem)
+        {
+            <li class="mm-nav-item"><a class="mm-nav-link" href="@Url.RouteUrl("NewProducts")">@T("Products.NewProducts")</a></li>
+        }
+        @if (Model.DisplayProductSearchMenuItem)
+        {
+            <li class="mm-nav-item"><a class="mm-nav-link" href="@Url.RouteUrl("ProductSearch")">@T("Search")</a></li>
+        }
+        @if (Model.DisplayCustomerInfoMenuItem)
+        {
+            <li class="mm-nav-item"><a class="mm-nav-link" href="@Url.RouteUrl("CustomerInfo")">@T("Account.MyAccount")</a></li>
+        }
+        @if (Model.BlogEnabled && Model.DisplayBlogMenuItem)
+        {
+            <li class="mm-nav-item"><a class="mm-nav-link" href="@Url.RouteUrl("Blog")">@T("Blog")</a></li>
+        }
+        @if (Model.ForumEnabled && Model.DisplayForumsMenuItem)
+        {
+            <li class="mm-nav-item"><a class="mm-nav-link" href="@Url.RouteUrl("Boards")">@T("Forum.Forums")</a></li>
+        }
+        @if (Model.DisplayContactUsMenuItem)
+        {
+            <li class="mm-nav-item"><a class="mm-nav-link" href="@Url.RouteUrl("ContactUs")">@T("ContactUs")</a></li>
+        }
+        @await Component.InvokeAsync("Widget", new { widgetZone = PublicWidgetZones.MobHeaderMenuAfter })
+    </ul>
+</div>
+<div class="bg-overlay"></div>
+
+<script asp-location="Footer">
+    $(document).ready(function () {
+
+        var cartLinkList = $("#other-link-list").html();
+        $("#other-links").prepend(cartLinkList);
+        $(".header-other-link-items").remove();
+
+        // Count first sublist items & assign class accordingly
+        $('.sublist.first-level').each(function () {
+            var navItem = $(this).children('li:not(.sublist-close-button):not(.mm-nav-img)');
+            var navItems = navItem.length;
+            if ((navItems == 4) || (navItems > 4)) {
+                $(this).addClass("col4");
+            }
+            if (navItems == 3) {
+                $(this).addClass("col3");
+            }
+            if (navItems == 2) {
+                $(this).addClass("col2");
+            }
+            if (navItems == 1) {
+                $(this).addClass("col1");
+            }
+        });
+
+        $(".mm-back-button").on("click", function (e) {
+            $(this).parent(".mm-navbar.active").removeClass("active");
+            $(this).parent(".sublist-close-button").parent(".sublist.active").removeClass("active");
+            $(this).parent(".sublist-close-button").parent(".mm-dropdown-list").parent(".mm-dropdown.active").removeClass("active");
+            if ($(".mm-navbar").hasClass("active")) {
+
+            } else {
+                $("body").removeClass("mm-menu-opened");
+                $(".header-menu").removeClass("active");
+            }
+            e.stopPropagation();
+        });
+        $(".header-lower .icon-hamburger").on("click", function (e) {
+            $(".mm-navbar.mobile").addClass("active");
+            $(".header-menu").addClass("active");
+            $(".bg-overlay").addClass("active");
+            $("body").addClass("mm-menu-opened");
+            e.stopPropagation();
+        });
+
+        $(".mm-nav-item .sublist-toggle").on("click", function (e) {
+            e.preventDefault();
+            $(this).siblings(".sublist").addClass("active");
+            $(this).siblings(".mm-dropdown").addClass("active");
+            e.stopPropagation();
+        });
+
+        $(".mm-navbar").on("click", function (e) {
+            e.stopPropagation();
+        });
+
+        function menuHide() {
+            $(".mm-navbar.mobile, .sublist").removeClass("active");
+            $(".bg-overlay").removeClass("active");
+            $(".mm-dropdown.active").removeClass("active");
+            $("body").removeClass("mm-menu-opened");
+        }
+
+        $(window).on("resize", function () {
+            menuHide();
+        });
+        $(document).on("click", function () {
+            menuHide();
+        });
+        $("#colseMenu").on("click", function () {
+            menuHide();
+        });
+
+        $(".pointer").on("click",function(e){
+            e.stopPropagation();
+            $(this).find('.menu-call').toggleClass('open');
+            $(this).parent().find('.cats').toggleClass('open')
+        })
+        //$(".about-us-parent").on("click",function(e){
+        //    e.stopPropagation();
+        //    $(this).siblings('.about-us').toggleClass('open');
+        //    $(this).toggleClass('open');
+        //})
+
+        $("html, body").on("click",function(){
+            $(".pointer").find('.menu-call').removeClass('open');
+            $(".pointer").parent().find('.cats').removeClass('open');
+            //$(".about-us-parent").siblings('.about-us').removeClass('open');
+            //$(".about-us-parent").removeClass('open');
+        })
+    });
+</script>

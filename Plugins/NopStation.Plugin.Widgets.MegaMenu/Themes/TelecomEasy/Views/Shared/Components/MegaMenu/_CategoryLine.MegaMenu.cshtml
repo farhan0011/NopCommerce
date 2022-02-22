@@ -1,0 +1,7 @@
+﻿@model MegaMenuModel.CategoryLineModel
+
+<li class="mm-nav-item">
+    <a class="mm-nav-link" href="@Url.RouteUrl("Category", new { SeName = Model.Category.SeName })">
+        <span>@Model.Category.Name</span>
+    </a>
+</li>
